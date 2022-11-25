@@ -8,7 +8,11 @@ Vue.config.productionTip = false
 import TypeNav from '@/components/TypeNav'
 Vue.component(TypeNav.name,TypeNav)
 
+import store from '@/store/index.js'
+
+
 new Vue({
   render: h => h(App),
   router,
+  store
 }).$mount('#app')
