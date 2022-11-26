@@ -1,7 +1,8 @@
 <template>
 	<div class="type-nav">
 		<div class="container">
-			<div @mouseleave="ShowColor(-1)">
+			<div @mouseleave="ShowColor(-1)"
+					 @click="goSearch">
 				<h2 class="all">全部商品分类</h2>
 				<div class="sort">
 					<div class="all-sort-list2">
@@ -10,7 +11,8 @@
 								 :key="list1.categoryId"
 								 :class="{cur:surrentIndex==index}">
 							<h3 @mouseenter="ShowColor(index)">
-								<a href="">{{list1.categoryName}}</a>
+								<a :data-categoryName="list1.categoryName"
+									 :data-categoryIndex="1">{{list1.categoryName}}</a>
 							</h3>
 							<div class="item-list clearfix"
 									 :style="{display:surrentIndex==index?'block':'none'}">
@@ -19,12 +21,14 @@
 										 :key="list2.categoryId">
 									<dl class="fore">
 										<dt>
-											<a href="">{{list2.categoryName}}</a>
+											<a :data-categoryName="list2.categoryName"
+												 :data-categoryIndex="2">{{list2.categoryName}}</a>
 										</dt>
 										<dd>
 											<em v-for="list3 in list2.categoryChild"
 													:key="list3.categoryId">
-												<a href="">{{list3.categoryName}}</a>
+												<a :data-categoryName="list3.categoryName"
+													 :data-categoryIndex="3">{{list3.categoryName}}</a>
 											</em>
 										</dd>
 									</dl>
@@ -71,7 +75,20 @@ export default {
 	methods: {
 		ShowColor: _.throttle(function (index) {
 			this.surrentIndex = index
-		}, 50)
+		}, 50),
+		goSearch (e) {
+			let element = e.target
+			if (element.tagName == 'A') {
+				let { categoryname, categoryindex } = element.dataset
+				this.$router.push({
+					name: 'search',
+					query: {
+            categoryname,
+            categoryindex
+					}
+				})
+			}
+		}
 	}
 }
 </script>
