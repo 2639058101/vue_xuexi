@@ -102,8 +102,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
-	name: 'List'
+	name: 'List',
+  mounted() {
+    this.$store.dispatch('getBannerList')
+  },
+  computed: {
+		...mapState({
+			//statel 里面包含大仓库 state 里面小仓库里的 state
+			creatorybanner: (state) => state.home.creatorybanner
+		})
+	},
 }
 </script>
 

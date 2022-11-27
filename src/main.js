@@ -10,6 +10,7 @@ Vue.component(TypeNav.name,TypeNav)
 
 import store from '@/store/index.js'
 
+import './mock/mockServe'
 
 new Vue({
   render: h => h(App),

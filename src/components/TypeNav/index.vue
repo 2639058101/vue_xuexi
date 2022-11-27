@@ -1,42 +1,47 @@
 <template>
 	<div class="type-nav">
 		<div class="container">
-			<div @mouseleave="ShowColor(-1)"
+			<div @mouseleave="leaveshow"
 					 @click="goSearch">
-				<h2 class="all">全部商品分类</h2>
-				<div class="sort">
-					<div class="all-sort-list2">
-						<div class="item"
-								 v-for=" (list1,index) in creatoryList"
-								 :key="list1.categoryId"
-								 :class="{cur:surrentIndex==index}">
-							<h3 @mouseenter="ShowColor(index)">
-								<a :data-categoryName="list1.categoryName"
-									 :data-categoryIndex="1">{{list1.categoryName}}</a>
-							</h3>
-							<div class="item-list clearfix"
-									 :style="{display:surrentIndex==index?'block':'none'}">
-								<div class="subitem"
-										 v-for="list2 in list1.categoryChild"
-										 :key="list2.categoryId">
-									<dl class="fore">
-										<dt>
-											<a :data-categoryName="list2.categoryName"
-												 :data-categoryIndex="2">{{list2.categoryName}}</a>
-										</dt>
-										<dd>
-											<em v-for="list3 in list2.categoryChild"
-													:key="list3.categoryId">
-												<a :data-categoryName="list3.categoryName"
-													 :data-categoryIndex="3">{{list3.categoryName}}</a>
-											</em>
-										</dd>
-									</dl>
+				<h2 class="all"
+						@mouseenter="ShowType">全部商品分类</h2>
+				<transition name="sort">
+					<div class="sort"
+							 v-show="show">
+						<div class="all-sort-list2">
+							<div class="item"
+									 v-for=" (list1,index) in creatoryList"
+									 :key="list1.categoryId"
+									 :class="{cur:surrentIndex==index}">
+								<h3 @mouseenter="ShowColor(index)">
+									<a :data-categoryName="list1.categoryName"
+										 :data-categoryIndex="1">{{list1.categoryName}}</a>
+								</h3>
+								<div class="item-list clearfix"
+										 :style="{display:surrentIndex==index?'block':'none'}">
+									<div class="subitem"
+											 v-for="list2 in list1.categoryChild"
+											 :key="list2.categoryId">
+										<dl class="fore">
+											<dt>
+												<a :data-categoryName="list2.categoryName"
+													 :data-categoryIndex="2">{{list2.categoryName}}</a>
+											</dt>
+											<dd>
+												<em v-for="list3 in list2.categoryChild"
+														:key="list3.categoryId">
+													<a :data-categoryName="list3.categoryName"
+														 :data-categoryIndex="3">{{list3.categoryName}}</a>
+												</em>
+											</dd>
+										</dl>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				</transition>
+
 			</div>
 			<nav class="nav">
 				<a href="###">服装城</a>
@@ -55,16 +60,21 @@
 
 <script>
 import { mapState } from 'vuex'
-import _ from 'lodash'
+import throttle from 'lodash/throttle'
+
 export default {
 	name: 'TypeNav',
 	data () {
 		return {
-			surrentIndex: -1
+			surrentIndex: -1,
+			show: true
 		}
 	},
 	mounted () {
-		this.$store.dispatch('creatoryList')
+
+		if (this.$route.path != '/home') {
+			this.show = false
+		}
 	},
 	computed: {
 		...mapState({
@@ -73,20 +83,30 @@ export default {
 		})
 	},
 	methods: {
-		ShowColor: _.throttle(function (index) {
+		ShowColor: throttle(function (index) {
 			this.surrentIndex = index
+
 		}, 50),
 		goSearch (e) {
 			let element = e.target
 			if (element.tagName == 'A') {
 				let { categoryname, categoryindex } = element.dataset
-				this.$router.push({
-					name: 'search',
-					query: {
-            categoryname,
-            categoryindex
-					}
-				})
+				let location = { name: 'search' }
+				location.query = {
+					categoryname,
+					categoryindex
+				}
+        location.params= this.$route.params
+				this.$router.push(location)
+			}
+		},
+		ShowType () {
+			this.show = true
+		},
+		leaveshow () {
+			this.surrentIndex = -1
+			if (this.$route.path != '/home') {
+				this.show = false
 			}
 		}
 	}
@@ -207,6 +227,20 @@ export default {
 					background-color: skyblue;
 				}
 			}
+		}
+		//过度动画
+		.sort-enter {
+			height: 0px;
+		}
+		.sort-enter-to {
+			height: 461px;
+		}
+		.sort-enter-active {
+			overflow: hidden;
+			transition: all 0.5s linear;
+		}
+		a {
+			cursor: pointer;
 		}
 	}
 }

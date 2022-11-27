@@ -58,15 +58,13 @@ export default {
   },
   methods:{
     goSearch(){
+      let query=this.$route.query
       this.$router.push({
         name:'search',
-        path:"/search",
         params:{
           params:this.SearchValue
         },
-        query:{  
-          query:this.SearchValue  
-        }
+        query                           
       })
     }
   }
