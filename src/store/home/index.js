@@ -1,8 +1,9 @@
-import { reqCategoryList,reqCategorybanner } from '@/api'
+import { reqCategoryList,reqCategorybanner,reqCategoryfloor } from '@/api'
 
 const state = {
   creatoryList: [],
   creatorybanner: [],
+  creatoryfloor: [],
 
 }
 
@@ -20,6 +21,12 @@ const actions = {
       commit("GETBANNERLIST",result.data)
     }
   },
+  async getFloorList({commit}) {
+    let result = await reqCategoryfloor()
+    if(result.code==200){
+      commit("GETFLOORLIST",result.data)
+    }
+  },
 }
 
 const mutations = {
@@ -28,7 +35,10 @@ const mutations = {
   },
   GETBANNERLIST(state,value){
     state.creatorybanner=value
-  }
+  },
+  GETFLOORLIST(state,value){
+    state.creatoryfloor=value
+  },
 }
 
 const getters = {}
