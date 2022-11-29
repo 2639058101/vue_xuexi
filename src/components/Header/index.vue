@@ -62,7 +62,7 @@ export default {
       this.$router.push({
         name:'search',
         params:{
-          params:this.SearchValue
+          keyword:this.SearchValue || undefined
         },
         query                           
       })

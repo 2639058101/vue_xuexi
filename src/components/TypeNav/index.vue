@@ -1,21 +1,21 @@
 <template>
 	<div class="type-nav">
 		<div class="container">
-			<div @mouseleave="leaveshow"
-					 @click="goSearch">
+			<div @mouseleave="leaveshow">
 				<h2 class="all"
 						@mouseenter="ShowType">全部商品分类</h2>
 				<transition name="sort">
 					<div class="sort"
 							 v-show="show">
-						<div class="all-sort-list2">
+						<div class="all-sort-list2"
+								 @click.prevent="goSearch">
 							<div class="item"
 									 v-for=" (list1,index) in creatoryList"
 									 :key="list1.categoryId"
 									 :class="{cur:surrentIndex==index}">
 								<h3 @mouseenter="ShowColor(index)">
 									<a :data-categoryName="list1.categoryName"
-										 :data-categoryIndex="1">{{list1.categoryName}}</a>
+										 :data-category1Id="list1.categoryId">{{list1.categoryName}}</a>
 								</h3>
 								<div class="item-list clearfix"
 										 :style="{display:surrentIndex==index?'block':'none'}">
@@ -25,13 +25,13 @@
 										<dl class="fore">
 											<dt>
 												<a :data-categoryName="list2.categoryName"
-													 :data-categoryIndex="2">{{list2.categoryName}}</a>
+													 :data-category2Id="list2.categoryId">{{list2.categoryName}}</a>
 											</dt>
 											<dd>
 												<em v-for="list3 in list2.categoryChild"
 														:key="list3.categoryId">
 													<a :data-categoryName="list3.categoryName"
-														 :data-categoryIndex="3">{{list3.categoryName}}</a>
+														 :data-category3Id="list3.categoryId">{{list3.categoryName}}</a>
 												</em>
 											</dd>
 										</dl>
@@ -89,16 +89,25 @@ export default {
 		}, 50),
 		goSearch (e) {
 			let element = e.target
-			if (element.tagName == 'A') {
-				let { categoryname, categoryindex } = element.dataset
+			let { categoryname, category1id, category2id, category3id } = element.dataset
+      
+			if (categoryname) {
 				let location = { name: 'search' }
-				location.query = {
-					categoryname,
-					categoryindex
+				let query = { categoryname: categoryname }
+
+				if (category1id) {
+					query.category1Id = category1id
+				} else if (category2id) {
+					query.category2Id = category2id
+				} else {
+					query.category3Id = category3id
 				}
-        location.params= this.$route.params
+				location.query = query
+				location.params = this.$route.params
 				this.$router.push(location)
+
 			}
+
 		},
 		ShowType () {
 			this.show = true
