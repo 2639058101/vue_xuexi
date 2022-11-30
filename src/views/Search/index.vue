@@ -11,15 +11,17 @@
 						</li>
 					</ul>
 					<ul class="fl sui-tag">
-						<li class="with-x">手机</li>
-						<li class="with-x">iphone<i>×</i></li>
-						<li class="with-x">华为<i>×</i></li>
-						<li class="with-x">OPPO<i>×</i></li>
+						<li class="with-x"
+								v-if="SearchData.categoryName">{{SearchData.categoryName}}<i @click="deleteName">×</i></li>
+						<li class="with-x"
+								v-if="SearchData.keyword">{{SearchData.keyword}}<i @click="deletekeyword">×</i></li>
+						<li class="with-x"
+								v-if="SearchData.trademark">{{SearchData.trademark.split(':')[1]}}<i @click="deletetrademark">×</i></li>
 					</ul>
 				</div>
 
 				<!--selector-->
-				<SearchSelector />
+				<SearchSelector @gettrademar='gettrademar'/>
 
 				<!--details-->
 				<div class="details clearfix">
@@ -150,7 +152,35 @@ export default {
 	methods: {
 		getData () {
 			this.$store.dispatch('getSearchList', this.SearchData)
-		}
+		},
+		deleteName () {
+			this.SearchData.categoryName = undefined
+			this.SearchData.category1Id = undefined
+			this.SearchData.category2Id = undefined
+			this.SearchData.category3Id = undefined
+			this.getData()
+			//地址栏也需要修改：进行路由跳转（现在的路由跳转只是跳转到自己这里）
+			//严谨：本意是删除query，如果路径中出现params不应该删除
+			if (this.$route.params) {
+				this.$router.push({ name: 'search', params: this.$route.params })
+			}
+		},
+    deletekeyword(){
+      this.SearchData.keyword=undefined
+      this.getData()
+      this.$bus.$emit('clear')
+      if (this.$route.query) {
+				this.$router.push({ name: 'search', params: this.$route.query })
+			}
+    },
+    deletetrademark(){
+      this.SearchData.trademark=undefined
+      this.getData()
+    },
+    gettrademar(trademar){
+      this.SearchData.trademark=`${trademar.tmId}:${trademar.tmName}`
+      this.getData()
+    }
 	},
 	computed: {
 		...mapGetters(['goodsList'])
@@ -158,8 +188,8 @@ export default {
 	watch: {
 		$route () {
 			this.SearchData.category1Id = '',
-				this.SearchData.category2Id = '',
-				this.SearchData.category3Id = ''
+			this.SearchData.category2Id = '',
+			this.SearchData.category3Id = ''
 			Object.assign(this.SearchData, this.$route.query, this.$route.params)
 			this.getData()
 

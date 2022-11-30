@@ -67,6 +67,11 @@ export default {
         query                           
       })
     }
+  },
+  mounted(){
+    this.$bus.$on('clear',()=>{
+      this.SearchValue=''
+    })
   }
 }
 </script>

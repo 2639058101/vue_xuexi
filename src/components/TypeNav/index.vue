@@ -93,7 +93,7 @@ export default {
       
 			if (categoryname) {
 				let location = { name: 'search' }
-				let query = { categoryname: categoryname }
+				let query = { categoryName: categoryname }
 
 				if (category1id) {
 					query.category1Id = category1id
