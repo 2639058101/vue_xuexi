@@ -8,6 +8,9 @@ Vue.config.productionTip = false
 import TypeNav from '@/components/TypeNav'
 Vue.component(TypeNav.name,TypeNav)
 
+import Paigination from '@/components/Paigination'
+Vue.component(Paigination.name,Paigination)
+
 import Carousel from '@/components/Carousel'
 Vue.component(Carousel.name,Carousel)
 

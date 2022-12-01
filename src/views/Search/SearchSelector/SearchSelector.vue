@@ -23,7 +23,7 @@
 			<div class="fl value">
 				<ul class="type-list">
 					<li v-for="(item1,index) in item.attrValueList"
-							:key="index">
+							:key="index" @click='attrInfo(item,item1)' style="cursor: pointer">
 						<a>{{item1}}</a>
 					</li>
 				</ul>
@@ -44,7 +44,10 @@ export default {
 	methods: {
 		trademarInfo (trademarkList) {
 			this.$emit('gettrademar',trademarkList)
-		}
+		},
+    attrInfo(attrsList,name){
+      this.$emit('attrInfo',attrsList,name)
+    }
 	}
 }
 </script>

@@ -16,23 +16,33 @@
 						<li class="with-x"
 								v-if="SearchData.keyword">{{SearchData.keyword}}<i @click="deletekeyword">×</i></li>
 						<li class="with-x"
-								v-if="SearchData.trademark">{{SearchData.trademark.split(':')[1]}}<i @click="deletetrademark">×</i></li>
+								v-if="SearchData.trademark">{{SearchData.trademark.split(':')[1]}}<i @click="deletetrademark(index)">×</i></li>
+						<li class="with-x"
+								v-for="(item, index) in SearchData.props"
+								:key="index">{{item.split(':')[1]}}<i @click="deleteattr">×</i></li>
 					</ul>
 				</div>
 
 				<!--selector-->
-				<SearchSelector @gettrademar='gettrademar'/>
+				<SearchSelector @gettrademar='gettrademar'
+												@attrInfo='attrInfo' />
 
 				<!--details-->
 				<div class="details clearfix">
 					<div class="sui-navbar">
 						<div class="navbar-inner filter">
 							<ul class="sui-nav">
-								<li class="active">
-									<a href="#">综合</a>
+								<li :class="{active:sort1}"
+										@click="ChangeOrder('1')">
+									<a href="#">综合<i v-show="sort1"
+											 class="iconfont"
+											 :class="{'icon-xiajiantou':des,'icon-xiajiantou-copy':asc}"></i></a>
 								</li>
-								<li>
-									<a href="#">销量</a>
+								<li :class="{active:sort2}"
+										@click="ChangeOrder('2')">
+									<a href="#">销量<i v-show="sort2"
+											 class="iconfont"
+											 :class="{'icon-xiajiantou':des,'icon-xiajiantou-copy':asc}"></i></a>
 								</li>
 								<li>
 									<a href="#">新品</a>
@@ -83,35 +93,7 @@
 							</li>
 						</ul>
 					</div>
-					<div class="fr page">
-						<div class="sui-pagination clearfix">
-							<ul>
-								<li class="prev disabled">
-									<a href="#">«上一页</a>
-								</li>
-								<li class="active">
-									<a href="#">1</a>
-								</li>
-								<li>
-									<a href="#">2</a>
-								</li>
-								<li>
-									<a href="#">3</a>
-								</li>
-								<li>
-									<a href="#">4</a>
-								</li>
-								<li>
-									<a href="#">5</a>
-								</li>
-								<li class="dotted"><span>...</span></li>
-								<li class="next">
-									<a href="#">下一页»</a>
-								</li>
-							</ul>
-							<div><span>共10页&nbsp;</span></div>
-						</div>
-					</div>
+					<Paigination></Paigination>
 				</div>
 			</div>
 		</div>
@@ -131,7 +113,7 @@ export default {
 				category3Id: "",
 				categoryName: "",
 				keyword: "",
-				order: "",
+				order: "1:desc",
 				pageNo: 1,
 				pageSize: 10,
 				props: [],
@@ -165,31 +147,65 @@ export default {
 				this.$router.push({ name: 'search', params: this.$route.params })
 			}
 		},
-    deletekeyword(){
-      this.SearchData.keyword=undefined
-      this.getData()
-      this.$bus.$emit('clear')
-      if (this.$route.query) {
+		deletekeyword () {
+			this.SearchData.keyword = undefined
+			this.getData()
+			this.$bus.$emit('clear')
+			if (this.$route.query) {
 				this.$router.push({ name: 'search', params: this.$route.query })
 			}
-    },
-    deletetrademark(){
-      this.SearchData.trademark=undefined
+		},
+		deletetrademark () {
+			this.SearchData.trademark = undefined
+			this.getData()
+		},
+		deleteattr (index) {
+			this.SearchData.props.splice(index, 1)
+		},
+		gettrademar (trademar) {
+			this.SearchData.trademark = `${trademar.tmId}:${trademar.tmName}`
+			this.getData()
+		},
+		attrInfo ({ attrId, attrName }, attrValue) {
+			let props = `${attrId}:${attrValue}:${attrName}`
+			if (this.SearchData.props.indexOf(props) == -1) {
+				this.SearchData.props.push(props)
+			}
+			this.getData()
+		},
+		ChangeOrder (Category) {
+			let newCategory = this.SearchData.order.split(':')[0]
+			let oldOrder = this.SearchData.order.split(':')[1]
+			let newOrder = ''
+			if (Category == newCategory) {
+				newOrder = `${Category}:${oldOrder=='desc'? 'asc':'desc'}`
+			} else {
+        newOrder=`${Category}:${'desc'}`
+			}
+      this.SearchData.order=newOrder
       this.getData()
-    },
-    gettrademar(trademar){
-      this.SearchData.trademark=`${trademar.tmId}:${trademar.tmName}`
-      this.getData()
-    }
+		}
 	},
 	computed: {
-		...mapGetters(['goodsList'])
+		...mapGetters(['goodsList']),
+		sort1 () {
+			return this.SearchData.order.indexOf('1') != -1
+		},
+		sort2 () {
+			return this.SearchData.order.indexOf('2') != -1
+		},
+		des () {
+			return this.SearchData.order.indexOf('desc') != -1
+		},
+		asc () {
+			return this.SearchData.order.indexOf('asc') != -1
+		}
 	},
 	watch: {
 		$route () {
 			this.SearchData.category1Id = '',
-			this.SearchData.category2Id = '',
-			this.SearchData.category3Id = ''
+				this.SearchData.category2Id = '',
+				this.SearchData.category3Id = ''
 			Object.assign(this.SearchData, this.$route.query, this.$route.params)
 			this.getData()
 
